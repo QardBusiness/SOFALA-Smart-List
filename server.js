@@ -1,12 +1,12 @@
 const express = require("express");
+const path = require("path");
 const app = express();
 app.use(express.json());
 
 console.log("🛒 Iniciando SOFALA Smart-List (Compras)...");
 
-app.get("/", (req, res) => {
-  res.send("Smart-List ONLINE");
-});
+const clientDist = path.join(__dirname, "client", "dist");
+app.use(express.static(clientDist));
 
 app.post("/api/smart-list/generate", (req, res) => {
   const { command } = req.body;
@@ -44,6 +44,11 @@ app.post("/api/smart-list/generate", (req, res) => {
       },
     });
   }, 1200); // Simulando o "pensamento" da IA
+});
+
+// Express 5's named wildcard is the compatible equivalent of app.get("*", ...).
+app.get("/{*splat}", (req, res) => {
+  res.sendFile(path.join(clientDist, "index.html"));
 });
 
 const port = process.env.PORT || 5000;
